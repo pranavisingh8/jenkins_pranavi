@@ -83,3 +83,53 @@ while sticks > 0:
         print("Computer wins!")
         break
 
+24-26.
+# STEP 1: Install required libraries (run once if needed)
+!pip install nltk scikit-learn
+
+# STEP 2: Imports
+import nltk
+import re
+from nltk.tokenize import word_tokenize
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+
+nltk.download('punkt')
+
+# STEP 3: Read 3 text files (make sure they are in the same folder as your notebook)
+file_names = ['/content/text1.txt', '/content/text2.txt', '/content/text3.txt']  # 🔁 change names if needed
+
+texts = []
+for fname in file_names:
+    with open(fname, 'r', encoding='utf-8') as f:
+        texts.append(f.read())
+
+text = ' '.join(texts)
+
+# STEP 4: Clean and preprocess
+cleaned_text = re.sub(r'[^A-Za-z\s]', '', text).lower()
+docs = [cleaned_text]
+
+# ASSIGNMENT 24: ONE-HOT ENCODING
+print("\n📌 Assignment 24 - One-Hot Encoding:")
+unique_words = sorted(set(word_tokenize(cleaned_text)))
+word_to_index = {word: i for i, word in enumerate(unique_words)}
+
+# Show one-hot encoding for first 10 words
+for word in unique_words[:10]:
+    one_hot = [0] * len(unique_words)
+    one_hot[word_to_index[word]] = 1
+    print(f"{word}: {one_hot}")
+
+# ASSIGNMENT 25: BAG OF WORDS
+print("\n📌 Assignment 25 - Bag of Words:")
+cv = CountVectorizer()
+bow_matrix = cv.fit_transform(docs)
+print("Vocabulary:", cv.get_feature_names_out()[:10])
+print("BoW Matrix:\n", bow_matrix.toarray())
+
+# ASSIGNMENT 26: TF-IDF
+print("\n📌 Assignment 26 - TF-IDF Vectorization:")
+tfidf = TfidfVectorizer()
+tfidf_matrix = tfidf.fit_transform(docs)
+print("Vocabulary:", tfidf.get_feature_names_out()[:10])
+print("TF-IDF Matrix:\n", tfidf_matrix.toarray())
