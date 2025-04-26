@@ -1,0 +1,84 @@
+22.
+import re
+import nltk
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+from textblob import TextBlob
+
+# Ensure necessary NLTK data is downloaded
+nltk.download('punkt')
+nltk.download('stopwords')
+
+# Read the text file
+with open('/content/sample_text.txt', 'r', encoding='utf-8') as file:
+    text = file.read()
+
+# a. Text cleaning: remove punctuation, numbers, and extra spaces
+text = re.sub(r'[^A-Za-z\s]', '', text)  # remove punctuation/special characters/numbers
+text = re.sub(r'\s+', ' ', text).strip()  # remove extra whitespaces
+
+# b. Convert text to lowercase
+text = text.lower()
+
+# c. Tokenization
+tokens = word_tokenize(text)
+
+# d. Remove stop words
+stop_words = set(stopwords.words('english'))
+filtered_tokens = [word for word in tokens if word not in stop_words]
+
+# e. Correct misspelled words using TextBlob
+corrected_tokens = [str(TextBlob(word).correct()) for word in filtered_tokens]
+
+# Final cleaned and corrected text
+final_text = ' '.join(corrected_tokens)
+
+print("Processed Text:")
+print(final_text)
+
+
+23.
+# STEP 1: Install required libraries
+!pip install nltk textblob
+!python -m textblob.download_corpora
+
+# STEP 2: Import libraries
+import re
+import nltk
+from nltk.tokenize import word_tokenize
+from nltk.stem import PorterStemmer, WordNetLemmatizer
+
+# Download NLTK datasets
+nltk.download('punkt')
+nltk.download('wordnet')
+nltk.download('omw-1.4')
+
+with open('/content/sample_text.txt', 'r', encoding='utf-8') as file:
+    text = file.read()
+
+
+# a. Text cleaning using regex
+text = re.sub(r'[^A-Za-z\s]', '', text)         # Remove punctuation/numbers
+text = re.sub(r'\s+', ' ', text).strip()        # Remove extra whitespaces
+
+# b. Convert to lowercase
+text = text.lower()
+
+# c. Stemming and Lemmatization
+tokens = word_tokenize(text)
+
+# Initialize stemmer and lemmatizer
+stemmer = PorterStemmer()
+lemmatizer = WordNetLemmatizer()
+
+# Apply stemming and lemmatization
+stemmed_tokens = [stemmer.stem(token) for token in tokens]
+lemmatized_tokens = [lemmatizer.lemmatize(token) for token in stemmed_tokens]
+
+# d. Create list of 3-consecutive lemmatized words
+triplets = [' '.join(lemmatized_tokens[i:i+3]) for i in range(len(lemmatized_tokens)-2)]
+
+# Output sample
+print(" Sample of 3-word sequences:")
+for t in triplets[:10]:
+    print(t)
