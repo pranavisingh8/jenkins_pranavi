@@ -1,0 +1,39 @@
+def fuzzy_union(set1, set2):
+    return {x: max(set1.get(x, 0), set2.get(x, 0)) for x in set(set1) | set(set2)}
+
+def fuzzy_intersection(set1, set2):
+    return {x: min(set1.get(x, 0), set2.get(x, 0)) for x in set(set1) & set(set2)}
+
+def fuzzy_complement(fuzzy_set):
+    return {x: 1 - fuzzy_set[x] for x in fuzzy_set}
+
+def is_subset(set1, set2):
+    return all(set1[x] <= set2.get(x, 0) for x in set1)
+
+def de_morgans_law(set1, set2):
+    lhs = fuzzy_complement(fuzzy_union(set1, set2))
+    rhs = fuzzy_intersection(fuzzy_complement(set1), fuzzy_complement(set2))
+    return lhs == rhs
+
+def get_fuzzy_set():
+    n = int(input("Enter number of elements: "))
+    fuzzy_set = {}
+    for _ in range(n):
+        element = input("Enter element: ")
+        membership = float(input(f"Enter membership value for {element}: "))
+        fuzzy_set[element] = membership
+    return fuzzy_set
+
+print("Enter first fuzzy set:")
+A = get_fuzzy_set()
+print("Enter second fuzzy set:")
+B = get_fuzzy_set()
+
+print("\nUnion:", fuzzy_union(A, B))
+print("Intersection:", fuzzy_intersection(A, B))
+print("Complement of A:", fuzzy_complement(A))
+print("Complement of B:", fuzzy_complement(B))
+print("A is subset of B:", is_subset(A, B))
+print("De Morgan's Law holds:", de_morgans_law(A, B))
+
+
