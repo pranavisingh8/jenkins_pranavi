@@ -1,6 +1,3 @@
-#DFS: 
-https://chatgpt.com/share/6807f12a-50d8-8004-8e8e-6a10f4280404
-
 #BFS:
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -54,15 +51,145 @@ class Graph:
         plt.title("BFS Tree")
         plt.show()
 
-# Example usage
 G = Graph()
-edges = [(0, 2), (1, 2), (1, 3), (1, 4), (3, 4), (5, 7), (2, 7),
-         (3, 6), (6, 7), (8, 4), (10, 4), (8, 5), (9, 7), (10, 7), (0, 9)]
 
-for u, v in edges:
+n = int(input("Enter number of edges: "))
+print("Enter each edge as two space-separated nodes (u v):")
+for _ in range(n):
+    u, v = map(int, input().split())
     G.add_edge(u, v)
 
-G.visualize()
-G.bfs(0)
 
-#Best FS:
+start_node = int(input("Enter start node for DFS: "))
+G.visualize()
+G.bfs(start_node)
+
+#dfs: rec csv
+import pandas as pd
+import networkx as nx
+import matplotlib.pyplot as plt
+
+class Graph:
+    def __init__(self):
+        self.edges = []
+        self.adj = {}
+
+    def add_edge(self, u, v):
+        self.edges.append((u, v))
+        if u not in self.adj:
+            self.adj[u] = []
+        if v not in self.adj:
+            self.adj[v] = []
+        self.adj[u].append(v)
+        self.adj[v].append(u)
+
+    def visualize(self):
+        G = nx.Graph()
+        G.add_edges_from(self.edges)
+        nx.draw_networkx(G)
+        plt.title("Original Graph")
+        plt.show()
+
+    def dfs_recursive(self, node, visited, parent, traversal):
+        visited.add(node)
+        traversal.append(node)
+        if node in self.adj:
+            for neighbor in self.adj[node]:
+                if neighbor not in visited:
+                    parent[neighbor] = node  # Track parent
+                    self.dfs_recursive(neighbor, visited, parent, traversal)
+
+    def dfs(self, start):
+        visited = set()
+        traversal = []
+        parent = {start: None}  # Store parent-child relationships for DFS tree
+
+        self.dfs_recursive(start, visited, parent, traversal)
+
+        print("DFS Traversal:", traversal)
+        self.visualize_tree(parent)
+
+    def visualize_tree(self, parent):
+        tree_edges = [(parent[node], node) for node in parent if parent[node] is not None]
+        tree = nx.Graph()
+        tree.add_edges_from(tree_edges)
+        nx.draw_networkx(tree)
+        plt.title("DFS Tree")
+        plt.show()
+
+G = Graph()
+
+df = pd.read_csv('/content/graph.csv')  
+for idx, row in df.iterrows():
+    G.add_edge(int(row['source']), int(row['destination']))
+
+start_node = int(input("Enter start node for DFS: "))
+G.visualize()
+G.dfs(start_node)
+
+
+#dfs non rec user
+import networkx as nx
+import matplotlib.pyplot as plt
+
+class Graph:
+    def __init__(self):
+        self.edges = []          # Stores all edges
+        self.graph = {}          # Adjacency list
+
+    def add_edge(self, u, v):
+        self.edges.append((u, v))
+        if u not in self.graph:
+            self.graph[u] = []
+        if v not in self.graph:
+            self.graph[v] = []
+        self.graph[u].append(v)
+        self.graph[v].append(u)  # Because it's an undirected graph
+
+    def dfs_iterative(self, start):
+        visited = set()
+        stack = [start]
+        parent = {start: None}
+        result = []
+
+        while stack:
+            node = stack.pop()
+            if node not in visited:
+                visited.add(node)
+                result.append(node)
+
+                # Add neighbors to stack (reverse for correct DFS order)
+                for neighbor in reversed(self.graph.get(node, [])):
+                    if neighbor not in visited:
+                        stack.append(neighbor)
+                        parent[neighbor] = node
+
+        print("DFS Traversal:", result)
+        self.visualize_tree(parent)
+
+    def visualize(self):
+        g = nx.Graph()
+        g.add_edges_from(self.edges)
+        nx.draw_networkx(g)
+        plt.show()
+
+    def visualize_tree(self, parent):
+        tree_edges = [(parent[n], n) for n in parent if parent[n] is not None]
+        tree = nx.Graph()
+        tree.add_edges_from(tree_edges)
+        nx.draw_networkx(tree)
+        plt.show()
+
+G = Graph()
+
+n = int(input("Enter number of edges: "))
+print("Enter each edge as two space-separated nodes (u v):")
+for _ in range(n):
+    u, v = map(int, input().split())
+    G.add_edge(u, v)
+
+
+start_node = int(input("Enter start node for DFS: "))
+G.visualize()
+G.dfs_iterative(start_node)
+
