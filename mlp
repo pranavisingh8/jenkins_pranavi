@@ -1,0 +1,207 @@
+17.
+import numpy as np
+
+class SimpleMLP:
+    def __init__(self, input_size, hidden_size1, hidden_size2, output_size):
+        self.input_size = input_size
+        self.hidden_size1 = hidden_size1
+        self.hidden_size2 = hidden_size2
+        self.output_size = output_size
+        self.epochs = 0
+
+    def randomize_parameters(self):
+        self.W1 = np.random.rand(self.input_size, self.hidden_size1)
+        self.b1 = np.random.rand(1, self.hidden_size1)
+
+        self.W2 = np.random.rand(self.hidden_size1, self.hidden_size2)
+        self.b2 = np.random.rand(1, self.hidden_size2)
+
+        self.W3 = np.random.rand(self.hidden_size2, self.output_size)
+        self.b3 = np.random.rand(1, self.output_size)
+
+    def run(self, epochs=10):
+        for _ in range(epochs):
+            self.randomize_parameters()
+            self.epochs += 1
+
+    def print_details(self):
+        print(f"Final Weight Matrices after {self.epochs} epochs:")
+        print(f"W1:\n{self.W1}\n")
+        print(f"W2:\n{self.W2}\n")
+        print(f"W3:\n{self.W3}\n")
+
+        print(f"Final Bias Values:")
+        print(f"b1:\n{self.b1}\n")
+        print(f"b2:\n{self.b2}\n")
+        print(f"b3:\n{self.b3}\n")
+
+        print(f"Total Epochs: {self.epochs}")
+
+if __name__ == "__main__":
+    input_size = 3  # Example: 3 inputs
+    hidden_size1 = 4
+    hidden_size2 = 3
+    output_size = 1
+
+    model = SimpleMLP(input_size, hidden_size1, hidden_size2, output_size)
+    model.run(epochs=10)  # Randomize 10 times
+    model.print_details()
+
+18.
+import numpy as np
+
+class SimpleMLP2:
+    def __init__(self, input_size, hidden_size, output_size):
+        self.input_size = input_size
+        self.hidden_size = hidden_size
+        self.output_size = output_size
+        self.epochs = 0
+
+    def randomize_parameters(self):
+        self.W1 = np.random.rand(self.input_size, self.hidden_size)
+        self.b1 = np.random.rand(1, self.hidden_size)
+
+        self.W2 = np.random.rand(self.hidden_size, self.output_size)
+        self.b2 = np.random.rand(1, self.output_size)
+
+    def run(self, epochs=10):
+        for _ in range(epochs):
+            self.randomize_parameters()
+            self.epochs += 1
+
+    def print_details(self):
+        print(f"Final Weight Matrices after {self.epochs} epochs:")
+        print(f"W1:\n{self.W1}\n")
+        print(f"W2:\n{self.W2}\n")
+
+        print(f"Final Bias Values:")
+        print(f"b1:\n{self.b1}\n")
+        print(f"b2:\n{self.b2}\n")
+
+        print(f"Total Epochs: {self.epochs}")
+
+if __name__ == "__main__":
+    input_size = 4  # 4 inputs
+    hidden_size = 5  # Example: 5 hidden neurons
+    output_size = 2  # 2 outputs
+
+    model2 = SimpleMLP2(input_size, hidden_size, output_size)
+    model2.run(epochs=10)  # Randomize 10 times
+    model2.print_details()
+
+19.
+import numpy as np
+
+# Sigmoid activation function
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+# Derivative of sigmoid function
+def sigmoid_derivative(x):
+    return x * (1 - x)
+
+# MLP class with 2 hidden layers
+class MLP:
+    def __init__(self, input_size, hidden_size1, hidden_size2, output_size):
+        # Initialize weights and biases
+        self.W1 = np.random.rand(input_size, hidden_size1)
+        self.b1 = np.random.rand(1, hidden_size1)
+
+        self.W2 = np.random.rand(hidden_size1, hidden_size2)
+        self.b2 = np.random.rand(1, hidden_size2)
+
+        self.W3 = np.random.rand(hidden_size2, output_size)
+        self.b3 = np.random.rand(1, output_size)
+
+        self.steps = 0
+
+    # Forward propagation
+    def forward(self, X):
+        self.input = X
+        self.a1 = sigmoid(np.dot(self.input, self.W1) + self.b1)
+        self.a2 = sigmoid(np.dot(self.a1, self.W2) + self.b2)
+        self.output = sigmoid(np.dot(self.a2, self.W3) + self.b3)
+        return self.output
+
+    # Backpropagation
+    def backprop(self, y, learning_rate):
+        output_error = y - self.output
+        delta3 = output_error * sigmoid_derivative(self.output)
+
+        delta2 = delta3.dot(self.W3.T) * sigmoid_derivative(self.a2)
+        delta1 = delta2.dot(self.W2.T) * sigmoid_derivative(self.a1)
+
+        # Update weights and biases
+        self.W3 += self.a2.T.dot(delta3) * learning_rate
+        self.b3 += np.sum(delta3, axis=0, keepdims=True) * learning_rate
+
+        self.W2 += self.a1.T.dot(delta2) * learning_rate
+        self.b2 += np.sum(delta2, axis=0, keepdims=True) * learning_rate
+
+        self.W1 += self.input.T.dot(delta1) * learning_rate
+        self.b1 += np.sum(delta1, axis=0, keepdims=True) * learning_rate
+
+    # Training method
+    def train(self, X, y, epochs=10000, learning_rate=0.1):
+        for _ in range(epochs):
+            self.forward(X)
+            self.backprop(y, learning_rate)
+            self.steps += 1
+
+    # Display weights, biases and steps
+    def print_details(self):
+        print("\nFinal Weight Matrices:")
+        print("W1:\n", self.W1)
+        print("W2:\n", self.W2)
+        print("W3:\n", self.W3)
+
+        print("\nFinal Bias Values:")
+        print("b1:\n", self.b1)
+        print("b2:\n", self.b2)
+        print("b3:\n", self.b3)
+
+        print(f"\nTotal Training Steps (Epochs): {self.steps}")
+
+# Example run
+if __name__ == "__main__":
+    # 4 binary inputs and corresponding binary outputs
+    X = np.array([[0, 0, 0, 0],
+                  [0, 0, 0, 1],
+                  [0, 0, 1, 0],
+                  [0, 0, 1, 1],
+                  [0, 1, 0, 0],
+                  [0, 1, 0, 1],
+                  [0, 1, 1, 0],
+                  [0, 1, 1, 1],
+                  [1, 0, 0, 0],
+                  [1, 0, 0, 1],
+                  [1, 0, 1, 0],
+                  [1, 0, 1, 1],
+                  [1, 1, 0, 0],
+                  [1, 1, 0, 1],
+                  [1, 1, 1, 0],
+                  [1, 1, 1, 1]])
+
+    y = np.array([[0],
+                  [1],
+                  [1],
+                  [0],
+                  [1],
+                  [0],
+                  [0],
+                  [1],
+                  [1],
+                  [0],
+                  [0],
+                  [1],
+                  [1],
+                  [1],
+                  [0],
+                  [1]])
+
+    # Initialize and train the MLP
+    mlp = MLP(input_size=4, hidden_size1=3, hidden_size2=3, output_size=1)
+    mlp.train(X, y, epochs=10000, learning_rate=0.1)
+
+    # Print final details
+    mlp.print_details()
