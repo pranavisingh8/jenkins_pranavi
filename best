@@ -1,0 +1,314 @@
+4️⃣ Directed Unweighted Graph + Heuristic from User
+
+import networkx as nx
+import matplotlib.pyplot as plt
+import heapq
+
+class gv:
+    def __init__(self):
+        self.visual = []
+        self.adj_list = {}
+        self.heuristic = {}
+
+    def addEdge(self, a, b):
+        self.visual.append([a, b])
+        if a not in self.adj_list:
+            self.adj_list[a] = []
+        self.adj_list[a].append((b, 1))  # Unweighted: cost = 1
+
+    def setHeuristic(self, node, value):
+        self.heuristic[node] = value
+
+    def visualize(self):
+        grp = nx.DiGraph()
+        grp.add_edges_from(self.visual)
+        nx.draw_networkx(grp)
+        plt.show()
+
+    def best_first_search(self, start, goal):
+        pq = []
+        heapq.heappush(pq, (self.heuristic[start], start))
+        visited = set()
+        parent = {start: None}
+        traversal = []
+
+        while pq:
+            _, node = heapq.heappop(pq)
+            if node in visited:
+                continue
+            traversal.append(node)
+            visited.add(node)
+            if node == goal:
+                break
+            for neighbor, _ in self.adj_list.get(node, []):
+                if neighbor not in visited:
+                    heapq.heappush(pq, (self.heuristic.get(neighbor, float('inf')), neighbor))
+                    parent[neighbor] = node
+
+        print("Best First Search Traversal:", traversal)
+        self.visualize_tree(parent)
+
+    def visualize_tree(self, parent):
+        tree_edges = [(parent[node], node) for node in parent if parent[node] is not None]
+        tree = nx.DiGraph()
+        tree.add_edges_from(tree_edges)
+        nx.draw_networkx(tree)
+        plt.show()
+
+# Take input
+G = gv()
+n = int(input("Enter number of edges: "))
+for _ in range(n):
+    a, b = map(int, input("Enter edge (from to): ").split())
+    G.addEdge(a, b)
+
+m = int(input("Enter number of heuristic values: "))
+for _ in range(m):
+    node, value = map(int, input("Enter node and its heuristic: ").split())
+    G.setHeuristic(node, value)
+
+start = int(input("Enter start node: "))
+goal = int(input("Enter goal node: "))
+
+G.visualize()
+G.best_first_search(start, goal)
+
+
+5️⃣ Undirected Weighted Graph + Heuristic from User
+python
+Copy
+Edit
+import networkx as nx
+import matplotlib.pyplot as plt
+import heapq
+
+class gv:
+    def __init__(self):
+        self.visual = []
+        self.adj_list = {}
+        self.heuristic = {}
+
+    def addEdge(self, a, b, cost):
+        self.visual.append([a, b])
+        if a not in self.adj_list:
+            self.adj_list[a] = []
+        if b not in self.adj_list:
+            self.adj_list[b] = []
+        self.adj_list[a].append((b, cost))
+        self.adj_list[b].append((a, cost))
+
+    def setHeuristic(self, node, value):
+        self.heuristic[node] = value
+
+    def visualize(self):
+        grp = nx.Graph()
+        grp.add_edges_from(self.visual)
+        nx.draw_networkx(grp)
+        plt.show()
+
+    def best_first_search(self, start, goal):
+        pq = []
+        heapq.heappush(pq, (self.heuristic[start], start))
+        visited = set()
+        parent = {start: None}
+        traversal = []
+
+        while pq:
+            _, node = heapq.heappop(pq)
+            if node in visited:
+                continue
+            traversal.append(node)
+            visited.add(node)
+            if node == goal:
+                break
+            for neighbor, _ in self.adj_list.get(node, []):
+                if neighbor not in visited:
+                    heapq.heappush(pq, (self.heuristic.get(neighbor, float('inf')), neighbor))
+                    parent[neighbor] = node
+
+        print("Best First Search Traversal:", traversal)
+        self.visualize_tree(parent)
+
+    def visualize_tree(self, parent):
+        tree_edges = [(parent[node], node) for node in parent if parent[node] is not None]
+        tree = nx.Graph()
+        tree.add_edges_from(tree_edges)
+        nx.draw_networkx(tree)
+        plt.show()
+
+# Take input
+G = gv()
+n = int(input("Enter number of edges: "))
+for _ in range(n):
+    a, b, cost = map(int, input("Enter edge (node1 node2 weight): ").split())
+    G.addEdge(a, b, cost)
+
+m = int(input("Enter number of heuristic values: "))
+for _ in range(m):
+    node, value = map(int, input("Enter node and its heuristic: ").split())
+    G.setHeuristic(node, value)
+
+start = int(input("Enter start node: "))
+goal = int(input("Enter goal node: "))
+
+G.visualize()
+G.best_first_search(start, goal)
+
+
+6️⃣ Undirected Unweighted Graph + Heuristic from User
+python
+Copy
+Edit
+import networkx as nx
+import matplotlib.pyplot as plt
+import heapq
+
+class gv:
+    def __init__(self):
+        self.visual = []
+        self.adj_list = {}
+        self.heuristic = {}
+
+    def addEdge(self, a, b):
+        self.visual.append([a, b])
+        if a not in self.adj_list:
+            self.adj_list[a] = []
+        if b not in self.adj_list:
+            self.adj_list[b] = []
+        self.adj_list[a].append((b, 1))
+        self.adj_list[b].append((a, 1))
+
+    def setHeuristic(self, node, value):
+        self.heuristic[node] = value
+
+    def visualize(self):
+        grp = nx.Graph()
+        grp.add_edges_from(self.visual)
+        nx.draw_networkx(grp)
+        plt.show()
+
+    def best_first_search(self, start, goal):
+        pq = []
+        heapq.heappush(pq, (self.heuristic[start], start))
+        visited = set()
+        parent = {start: None}
+        traversal = []
+
+        while pq:
+            _, node = heapq.heappop(pq)
+            if node in visited:
+                continue
+            traversal.append(node)
+            visited.add(node)
+            if node == goal:
+                break
+            for neighbor, _ in self.adj_list.get(node, []):
+                if neighbor not in visited:
+                    heapq.heappush(pq, (self.heuristic.get(neighbor, float('inf')), neighbor))
+                    parent[neighbor] = node
+
+        print("Best First Search Traversal:", traversal)
+        self.visualize_tree(parent)
+
+    def visualize_tree(self, parent):
+        tree_edges = [(parent[node], node) for node in parent if parent[node] is not None]
+        tree = nx.Graph()
+        tree.add_edges_from(tree_edges)
+        nx.draw_networkx(tree)
+        plt.show()
+
+# Take input
+G = gv()
+n = int(input("Enter number of edges: "))
+for _ in range(n):
+    a, b = map(int, input("Enter edge (node1 node2): ").split())
+    G.addEdge(a, b)
+
+m = int(input("Enter number of heuristic values: "))
+for _ in range(m):
+    node, value = map(int, input("Enter node and its heuristic: ").split())
+    G.setHeuristic(node, value)
+
+start = int(input("Enter start node: "))
+goal = int(input("Enter goal node: "))
+
+G.visualize()
+G.best_first_search(start, goal)
+
+
+7️⃣ Directed Weighted Graph + Heuristic from User
+python
+Copy
+Edit
+import networkx as nx
+import matplotlib.pyplot as plt
+import heapq
+
+class gv:
+    def __init__(self):
+        self.visual = []
+        self.adj_list = {}
+        self.heuristic = {}
+
+    def addEdge(self, a, b, cost):
+        self.visual.append([a, b])
+        if a not in self.adj_list:
+            self.adj_list[a] = []
+        self.adj_list[a].append((b, cost))
+
+    def setHeuristic(self, node, value):
+        self.heuristic[node] = value
+
+    def visualize(self):
+        grp = nx.DiGraph()
+        grp.add_edges_from(self.visual)
+        nx.draw_networkx(grp)
+        plt.show()
+
+    def best_first_search(self, start, goal):
+        pq = []
+        heapq.heappush(pq, (self.heuristic[start], start))
+        visited = set()
+        parent = {start: None}
+        traversal = []
+
+        while pq:
+            _, node = heapq.heappop(pq)
+            if node in visited:
+                continue
+            traversal.append(node)
+            visited.add(node)
+            if node == goal:
+                break
+            for neighbor, _ in self.adj_list.get(node, []):
+                if neighbor not in visited:
+                    heapq.heappush(pq, (self.heuristic.get(neighbor, float('inf')), neighbor))
+                    parent[neighbor] = node
+
+        print("Best First Search Traversal:", traversal)
+        self.visualize_tree(parent)
+
+    def visualize_tree(self, parent):
+        tree_edges = [(parent[node], node) for node in parent if parent[node] is not None]
+        tree = nx.DiGraph()
+        tree.add_edges_from(tree_edges)
+        nx.draw_networkx(tree)
+        plt.show()
+
+# Take input
+G = gv()
+n = int(input("Enter number of edges: "))
+for _ in range(n):
+    a, b, cost = map(int, input("Enter edge (from to weight): ").split())
+    G.addEdge(a, b, cost)
+
+m = int(input("Enter number of heuristic values: "))
+for _ in range(m):
+    node, value = map(int, input("Enter node and its heuristic: ").split())
+    G.setHeuristic(node, value)
+
+start = int(input("Enter start node: "))
+goal = int(input("Enter goal node: "))
+
+G.visualize()
+G.best_first_search(start, goal)
