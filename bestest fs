@@ -1,0 +1,54 @@
+import heapq
+
+class Graph:
+    def __init__(self):
+        self.adj_list = {}
+        self.heuristic = {}
+
+    def add_edge(self, a, b):
+        if a not in self.adj_list:
+            self.adj_list[a] = []
+        if b not in self.adj_list:
+            self.adj_list[b] = []
+        self.adj_list[a].append((b, 1))
+        self.adj_list[b].append((a, 1))
+
+    def set_heuristic(self, node, value):
+        self.heuristic[node] = value
+
+    def best_first_search(self, start, goal):
+        pq = []
+        heapq.heappush(pq, (self.heuristic.get(start, float('inf')), start))
+        visited = set()
+        traversal = []
+
+        while pq:
+            _, node = heapq.heappop(pq)
+            if node in visited:
+                continue
+            traversal.append(node)
+            visited.add(node)
+            if node == goal:
+                break
+            for neighbor, _ in self.adj_list.get(node, []):
+                if neighbor not in visited:
+                    heapq.heappush(pq, (self.heuristic.get(neighbor, float('inf')), neighbor))
+
+        print("Best First Search Traversal:", traversal)
+
+# Take input
+G = Graph()
+n = int(input("Enter number of edges: "))
+for _ in range(n):
+    a, b = map(int, input("Enter edge (node1 node2): ").split())
+    G.add_edge(a, b)
+
+m = int(input("Enter number of heuristic values: "))
+for _ in range(m):
+    node, value = map(int, input("Enter node and its heuristic: ").split())
+    G.set_heuristic(node, value)
+
+start = int(input("Enter start node: "))
+goal = int(input("Enter goal node: "))
+
+G.best_first_search(start, goal)
