@@ -1,3 +1,15 @@
+G = Graph()
+edges = [(0,1,1), (1,2,2), (2,3,1), (0,3,4), (1,4,3), (4,3,2), (2,5,2), (5,6,3), (6,7,1), (5,7,2), (3,7,4), (4,8,5), (8,9,2), (9,7,3)]
+for a, b, cost in edges:
+    G.add(a, b, cost)
+
+heuristics = {0:5, 1:4, 2:3, 3:2, 4:4, 5:3, 6:2, 7:1, 8:3, 9:0}
+for node, value in heuristics.items():
+    G.h(node, value)
+
+G.visualize()
+G.a_star(0, 9)
+
 A: undirected:
 import networkx as nx
 import matplotlib.pyplot as plt
