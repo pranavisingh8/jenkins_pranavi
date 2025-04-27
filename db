@@ -129,67 +129,42 @@ G.dfs(start_node)
 
 
 #dfs non rec user
-import networkx as nx
-import matplotlib.pyplot as plt
-
 class Graph:
     def __init__(self):
-        self.edges = []          # Stores all edges
-        self.graph = {}          # Adjacency list
+        self.adj = {}
 
-    def add_edge(self, u, v):
-        self.edges.append((u, v))
-        if u not in self.graph:
-            self.graph[u] = []
-        if v not in self.graph:
-            self.graph[v] = []
-        self.graph[u].append(v)
-        self.graph[v].append(u)  # Because it's an undirected graph
-
-    def dfs_iterative(self, start):
-        visited = set()
+    def addEdge(self, u, v):
+        if u not in self.adj:
+            self.adj[u] = []
+        if v not in self.adj:
+            self.adj[v] = []
+        self.adj[u].append(v)
+        self.adj[v].append(u)
+    
+    def dfs(self, start):
         stack = [start]
         parent = {start: None}
-        result = []
+        traversal = []
+        visited = set([start])   # Mark start as visited when pushing
 
         while stack:
             node = stack.pop()
-            if node not in visited:
-                visited.add(node)
-                result.append(node)
+            traversal.append(node)
+            for neighbor in reversed(self.adj.get(node, [])):
+                if neighbor not in visited:
+                    stack.append(neighbor)
+                    visited.add(neighbor)  # Mark neighbor visited immediately
+                    parent[neighbor] = node 
 
-                # Add neighbors to stack (reverse for correct DFS order)
-                for neighbor in reversed(self.graph.get(node, [])):
-                    if neighbor not in visited:
-                        stack.append(neighbor)
-                        parent[neighbor] = node
-
-        print("DFS Traversal:", result)
-        self.visualize_tree(parent)
-
-    def visualize(self):
-        g = nx.Graph()
-        g.add_edges_from(self.edges)
-        nx.draw_networkx(g)
-        plt.show()
-
-    def visualize_tree(self, parent):
-        tree_edges = [(parent[n], n) for n in parent if parent[n] is not None]
-        tree = nx.Graph()
-        tree.add_edges_from(tree_edges)
-        nx.draw_networkx(tree)
-        plt.show()
+        print("dfs traversal", traversal)
 
 G = Graph()
 
-n = int(input("Enter number of edges: "))
-print("Enter each edge as two space-separated nodes (u v):")
+n = int(input("Enter no of edges: "))
+print("Enter edges")
 for _ in range(n):
     u, v = map(int, input().split())
-    G.add_edge(u, v)
+    G.addEdge(u, v)
 
-
-start_node = int(input("Enter start node for DFS: "))
-G.visualize()
-G.dfs_iterative(start_node)
-
+start_node = int(input('Enter start point: '))
+G.dfs(start_node)
