@@ -1,0 +1,1163 @@
+#BFS:
+import networkx as nx
+import matplotlib.pyplot as plt
+from collections import deque
+
+class Graph:
+    def __init__(self):
+        self.edges = []        # For visualization
+        self.adj = {}          # Adjacency list
+
+    def add_edge(self, u, v):
+        self.edges.append((u, v))
+        if u not in self.adj:
+            self.adj[u] = []
+        if v not in self.adj:
+            self.adj[v] = []
+        self.adj[u].append(v)
+        self.adj[v].append(u)
+
+    def visualize(self):
+        g = nx.Graph()
+        g.add_edges_from(self.edges)
+        nx.draw_networkx(g)
+        plt.title("Original Graph")
+        plt.show()
+
+    def bfs(self, start):
+        queue = deque([start])
+        visited = set()
+        traversal = []
+        parent = {start: None}
+
+        while queue:
+            node = queue.popleft()
+            if node not in visited:
+                visited.add(node)
+                traversal.append(node)
+                for neighbor in self.adj[node]:
+                    if neighbor not in visited and neighbor not in queue:
+                        queue.append(neighbor)
+                        parent[neighbor] = node
+
+        print("BFS Traversal:", traversal)
+        self.visualize_tree(parent)
+
+    def visualize_tree(self, parent):
+        tree_edges = [(parent[n], n) for n in parent if parent[n] is not None]
+        tree = nx.Graph()
+        tree.add_edges_from(tree_edges)
+        nx.draw_networkx(tree)
+        plt.title("BFS Tree")
+        plt.show()
+
+G = Graph()
+
+n = int(input("Enter number of edges: "))
+print("Enter each edge as two space-separated nodes (u v):")
+for _ in range(n):
+    u, v = map(int, input().split())
+    G.add_edge(u, v)
+
+
+start_node = int(input("Enter start node for DFS: "))
+G.visualize()
+G.bfs(start_node)
+
+#dfs: rec csv
+import pandas as pd
+import networkx as nx
+import matplotlib.pyplot as plt
+
+class Graph:
+    def __init__(self):
+        self.edges = []
+        self.adj = {}
+
+    def add_edge(self, u, v):
+        self.edges.append((u, v))
+        if u not in self.adj:
+            self.adj[u] = []
+        if v not in self.adj:
+            self.adj[v] = []
+        self.adj[u].append(v)
+        self.adj[v].append(u)
+
+    def visualize(self):
+        G = nx.Graph()
+        G.add_edges_from(self.edges)
+        nx.draw_networkx(G)
+        plt.title("Original Graph")
+        plt.show()
+
+    def dfs_recursive(self, node, visited, parent, traversal):
+        visited.add(node)
+        traversal.append(node)
+        if node in self.adj:
+            for neighbor in self.adj[node]:
+                if neighbor not in visited:
+                    parent[neighbor] = node  # Track parent
+                    self.dfs_recursive(neighbor, visited, parent, traversal)
+
+    def dfs(self, start):
+        visited = set()
+        traversal = []
+        parent = {start: None}  # Store parent-child relationships for DFS tree
+
+        self.dfs_recursive(start, visited, parent, traversal)
+
+        print("DFS Traversal:", traversal)
+        self.visualize_tree(parent)
+
+    def visualize_tree(self, parent):
+        tree_edges = [(parent[node], node) for node in parent if parent[node] is not None]
+        tree = nx.Graph()
+        tree.add_edges_from(tree_edges)
+        nx.draw_networkx(tree)
+        plt.title("DFS Tree")
+        plt.show()
+
+G = Graph()
+
+df = pd.read_csv('/content/graph.csv')  
+for idx, row in df.iterrows():
+    G.add_edge(int(row['source']), int(row['destination']))
+
+start_node = int(input("Enter start node for DFS: "))
+G.visualize()
+G.dfs(start_node)
+
+
+#dfs non rec user
+class Graph:
+    def __init__(self):
+        self.adj = {}
+
+    def addEdge(self, u, v):
+        if u not in self.adj:
+            self.adj[u] = []
+        if v not in self.adj:
+            self.adj[v] = []
+        self.adj[u].append(v)
+        self.adj[v].append(u)
+    
+    def dfs(self, start):
+        stack = [start]
+        parent = {start: None}
+        traversal = []
+        visited = set([start])   # Mark start as visited when pushing
+
+        while stack:
+            node = stack.pop()
+            traversal.append(node)
+            for neighbor in reversed(self.adj.get(node, [])):
+                if neighbor not in visited:
+                    stack.append(neighbor)
+                    visited.add(neighbor)  # Mark neighbor visited immediately
+                    parent[neighbor] = node 
+
+        print("dfs traversal", traversal)
+
+G = Graph()
+
+n = int(input("Enter no of edges: "))
+print("Enter edges")
+for _ in range(n):
+    u, v = map(int, input().split())
+    G.addEdge(u, v)
+
+start_node = int(input('Enter start point: '))
+G.dfs(start_node)
+
+G = gv()
+G.addEdge(0, 2, 1)
+G.addEdge(1, 2, 2)
+G.addEdge(1, 3, 1)
+G.addEdge(1, 4, 3)
+G.addEdge(3, 4, 1)
+G.addEdge(5, 7, 2)
+G.addEdge(2, 7, 3)
+G.addEdge(3, 6, 2)
+G.addEdge(6, 7, 1)
+G.addEdge(8, 4, 2)
+G.addEdge(10, 4, 3)
+G.addEdge(8, 5, 2)
+G.addEdge(9, 7, 1)
+G.addEdge(10, 7, 2)
+G.addEdge(0, 9, 3)
+
+heuristic_values = {0: 7, 1: 6, 2: 5, 3: 4, 4: 3, 5: 6, 6: 2, 7: 1, 8: 5, 9: 4, 10: 3}
+for node, value in heuristic_values.items():
+    G.setHeuristic(node, value)
+
+G.visualize()
+G.best_first_search(0, 7)
+
+
+4️⃣ Directed Unweighted Graph + Heuristic from User
+import networkx as nx
+import matplotlib.pyplot as plt
+import heapq
+
+class gv:
+    def __init__(self):
+        self.visual = []
+        self.adj_list = {}
+        self.heuristic = {}
+
+    def addEdge(self, a, b):
+        self.visual.append([a, b])
+        if a not in self.adj_list:
+            self.adj_list[a] = []
+        self.adj_list[a].append((b, 1))  # Unweighted: cost = 1
+
+    def setHeuristic(self, node, value):
+        self.heuristic[node] = value
+
+    def visualize(self):
+        grp = nx.DiGraph()
+        grp.add_edges_from(self.visual)
+        nx.draw_networkx(grp)
+        plt.show()
+
+    def best_first_search(self, start, goal):
+        pq = []
+        heapq.heappush(pq, (self.heuristic[start], start))
+        visited = set()
+        parent = {start: None}
+        traversal = []
+
+        while pq:
+            _, node = heapq.heappop(pq)
+            if node in visited:
+                continue
+            traversal.append(node)
+            visited.add(node)
+            if node == goal:
+                break
+            for neighbor, _ in self.adj_list.get(node, []):
+                if neighbor not in visited:
+                    heapq.heappush(pq, (self.heuristic.get(neighbor, float('inf')), neighbor))
+                    parent[neighbor] = node
+
+        print("Best First Search Traversal:", traversal)
+        self.visualize_tree(parent)
+
+    def visualize_tree(self, parent):
+        tree_edges = [(parent[node], node) for node in parent if parent[node] is not None]
+        tree = nx.DiGraph()
+        tree.add_edges_from(tree_edges)
+        nx.draw_networkx(tree)
+        plt.show()
+
+# Take input
+G = gv()
+n = int(input("Enter number of edges: "))
+for _ in range(n):
+    a, b = map(int, input("Enter edge (from to): ").split())
+    G.addEdge(a, b)
+
+m = int(input("Enter number of heuristic values: "))
+for _ in range(m):
+    node, value = map(int, input("Enter node and its heuristic: ").split())
+    G.setHeuristic(node, value)
+
+start = int(input("Enter start node: "))
+goal = int(input("Enter goal node: "))
+
+G.visualize()
+G.best_first_search(start, goal)
+
+
+5️⃣ Undirected Weighted Graph + Heuristic from User
+python
+Copy
+Edit
+import networkx as nx
+import matplotlib.pyplot as plt
+import heapq
+
+class gv:
+    def __init__(self):
+        self.visual = []
+        self.adj_list = {}
+        self.heuristic = {}
+
+    def addEdge(self, a, b, cost):
+        self.visual.append([a, b])
+        if a not in self.adj_list:
+            self.adj_list[a] = []
+        if b not in self.adj_list:
+            self.adj_list[b] = []
+        self.adj_list[a].append((b, cost))
+        self.adj_list[b].append((a, cost))
+
+    def setHeuristic(self, node, value):
+        self.heuristic[node] = value
+
+    def visualize(self):
+        grp = nx.Graph()
+        grp.add_edges_from(self.visual)
+        nx.draw_networkx(grp)
+        plt.show()
+
+    def best_first_search(self, start, goal):
+        pq = []
+        heapq.heappush(pq, (self.heuristic[start], start))
+        visited = set()
+        parent = {start: None}
+        traversal = []
+
+        while pq:
+            _, node = heapq.heappop(pq)
+            if node in visited:
+                continue
+            traversal.append(node)
+            visited.add(node)
+            if node == goal:
+                break
+            for neighbor, _ in self.adj_list.get(node, []):
+                if neighbor not in visited:
+                    heapq.heappush(pq, (self.heuristic.get(neighbor, float('inf')), neighbor))
+                    parent[neighbor] = node
+
+        print("Best First Search Traversal:", traversal)
+        self.visualize_tree(parent)
+
+    def visualize_tree(self, parent):
+        tree_edges = [(parent[node], node) for node in parent if parent[node] is not None]
+        tree = nx.Graph()
+        tree.add_edges_from(tree_edges)
+        nx.draw_networkx(tree)
+        plt.show()
+
+# Take input
+G = gv()
+n = int(input("Enter number of edges: "))
+for _ in range(n):
+    a, b, cost = map(int, input("Enter edge (node1 node2 weight): ").split())
+    G.addEdge(a, b, cost)
+
+m = int(input("Enter number of heuristic values: "))
+for _ in range(m):
+    node, value = map(int, input("Enter node and its heuristic: ").split())
+    G.setHeuristic(node, value)
+
+start = int(input("Enter start node: "))
+goal = int(input("Enter goal node: "))
+
+G.visualize()
+G.best_first_search(start, goal)
+
+
+6️⃣ Undirected Unweighted Graph + Heuristic from User
+python
+Copy
+Edit
+import networkx as nx
+import matplotlib.pyplot as plt
+import heapq
+
+class gv:
+    def __init__(self):
+        self.visual = []
+        self.adj_list = {}
+        self.heuristic = {}
+
+    def addEdge(self, a, b):
+        self.visual.append([a, b])
+        if a not in self.adj_list:
+            self.adj_list[a] = []
+        if b not in self.adj_list:
+            self.adj_list[b] = []
+        self.adj_list[a].append((b, 1))
+        self.adj_list[b].append((a, 1))
+
+    def setHeuristic(self, node, value):
+        self.heuristic[node] = value
+
+    def visualize(self):
+        grp = nx.Graph()
+        grp.add_edges_from(self.visual)
+        nx.draw_networkx(grp)
+        plt.show()
+
+    def best_first_search(self, start, goal):
+        pq = []
+        heapq.heappush(pq, (self.heuristic[start], start))
+        visited = set()
+        parent = {start: None}
+        traversal = []
+
+        while pq:
+            _, node = heapq.heappop(pq)
+            if node in visited:
+                continue
+            traversal.append(node)
+            visited.add(node)
+            if node == goal:
+                break
+            for neighbor, _ in self.adj_list.get(node, []):
+                if neighbor not in visited:
+                    heapq.heappush(pq, (self.heuristic.get(neighbor, float('inf')), neighbor))
+                    parent[neighbor] = node
+
+        print("Best First Search Traversal:", traversal)
+        self.visualize_tree(parent)
+
+    def visualize_tree(self, parent):
+        tree_edges = [(parent[node], node) for node in parent if parent[node] is not None]
+        tree = nx.Graph()
+        tree.add_edges_from(tree_edges)
+        nx.draw_networkx(tree)
+        plt.show()
+
+# Take input
+G = gv()
+n = int(input("Enter number of edges: "))
+for _ in range(n):
+    a, b = map(int, input("Enter edge (node1 node2): ").split())
+    G.addEdge(a, b)
+
+m = int(input("Enter number of heuristic values: "))
+for _ in range(m):
+    node, value = map(int, input("Enter node and its heuristic: ").split())
+    G.setHeuristic(node, value)
+
+start = int(input("Enter start node: "))
+goal = int(input("Enter goal node: "))
+
+G.visualize()
+G.best_first_search(start, goal)
+
+
+7️⃣ Directed Weighted Graph + Heuristic from User
+python
+Copy
+Edit
+import networkx as nx
+import matplotlib.pyplot as plt
+import heapq
+
+class gv:
+    def __init__(self):
+        self.visual = []
+        self.adj_list = {}
+        self.heuristic = {}
+
+    def addEdge(self, a, b, cost):
+        self.visual.append([a, b])
+        if a not in self.adj_list:
+            self.adj_list[a] = []
+        self.adj_list[a].append((b, cost))
+
+    def setHeuristic(self, node, value):
+        self.heuristic[node] = value
+
+    def visualize(self):
+        grp = nx.DiGraph()
+        grp.add_edges_from(self.visual)
+        nx.draw_networkx(grp)
+        plt.show()
+
+    def best_first_search(self, start, goal):
+        pq = []
+        heapq.heappush(pq, (self.heuristic[start], start))
+        visited = set()
+        parent = {start: None}
+        traversal = []
+
+        while pq:
+            _, node = heapq.heappop(pq)
+            if node in visited:
+                continue
+            traversal.append(node)
+            visited.add(node)
+            if node == goal:
+                break
+            for neighbor, _ in self.adj_list.get(node, []):
+                if neighbor not in visited:
+                    heapq.heappush(pq, (self.heuristic.get(neighbor, float('inf')), neighbor))
+                    parent[neighbor] = node
+
+        print("Best First Search Traversal:", traversal)
+        self.visualize_tree(parent)
+
+    def visualize_tree(self, parent):
+        tree_edges = [(parent[node], node) for node in parent if parent[node] is not None]
+        tree = nx.DiGraph()
+        tree.add_edges_from(tree_edges)
+        nx.draw_networkx(tree)
+        plt.show()
+
+# Take input
+G = gv()
+n = int(input("Enter number of edges: "))
+for _ in range(n):
+    a, b, cost = map(int, input("Enter edge (from to weight): ").split())
+    G.addEdge(a, b, cost)
+
+m = int(input("Enter number of heuristic values: "))
+for _ in range(m):
+    node, value = map(int, input("Enter node and its heuristic: ").split())
+    G.setHeuristic(node, value)
+
+start = int(input("Enter start node: "))
+goal = int(input("Enter goal node: "))
+
+G.visualize()
+G.best_first_search(start, goal)
+
+G = Graph()
+edges = [(0,1,1), (1,2,2), (2,3,1), (0,3,4), (1,4,3), (4,3,2), (2,5,2), (5,6,3), (6,7,1), (5,7,2), (3,7,4), (4,8,5), (8,9,2), (9,7,3)]
+for a, b, cost in edges:
+    G.add(a, b, cost)
+
+heuristics = {0:5, 1:4, 2:3, 3:2, 4:4, 5:3, 6:2, 7:1, 8:3, 9:0}
+for node, value in heuristics.items():
+    G.h(node, value)
+
+G.visualize()
+G.a_star(0, 9)
+
+A: undirected:
+import networkx as nx
+import matplotlib.pyplot as plt
+import heapq
+
+class gv:
+    def __init__(self):
+        self.visual = []
+        self.adj_list = {}
+        self.heuristic = {}
+
+    def addEdge(self, a, b, cost):
+        self.visual.append([a, b])
+        if a not in self.adj_list:
+            self.adj_list[a] = []
+        if b not in self.adj_list:
+            self.adj_list[b] = []
+        self.adj_list[a].append((b, cost))
+        self.adj_list[b].append((a, cost))
+
+    def setHeuristic(self, n, value):
+        self.heuristic[n] = value
+
+    def visualize(self):
+        grp = nx.Graph()
+        grp.add_edges_from(self.visual)
+        nx.draw_networkx(grp)
+        plt.show()
+
+    def a_star(self, start, goal):
+        pq = []
+        heapq.heappush(pq, (self.heuristic[start], 0, start))
+        visited = set()
+        parent = {start: None}
+        cost_so_far = {start: 0}
+
+        while pq:
+            est_total, cost, n = heapq.heappop(pq)
+            if n in visited:
+                continue
+
+            visited.add(n)
+
+            if n == goal:
+                break
+
+            for neighbor, weight in self.adj_list.get(n, []):
+                new_cost = cost + weight
+                if neighbor not in cost_so_far or new_cost < cost_so_far[neighbor]:
+                    cost_so_far[neighbor] = new_cost
+                    priority = new_cost + self.heuristic.get(neighbor, float('inf'))
+                    heapq.heappush(pq, (priority, new_cost, neighbor))
+                    parent[neighbor] = n
+
+        self.visualize_tree(parent)
+        print("A* Path:", self.construct_path(parent, start, goal))
+
+    def visualize_tree(self, parent):
+        tree_edges = [(parent[n], n) for n in parent if parent[n] is not None]
+        tree = nx.Graph()
+        tree.add_edges_from(tree_edges)
+        nx.draw_networkx(tree)
+        plt.show()
+
+    def construct_path(self, parent, start, goal):
+        path = []
+        while goal is not None:
+            path.append(goal)
+            goal = parent[goal]
+        return path[::-1]
+
+G = gv()
+
+n_edges = int(input("Enter number of edges: "))
+for _ in range(n_edges):
+    a = int(input("Enter node A: "))
+    b = int(input("Enter node B: "))
+    cost = int(input("Enter weight: "))
+    G.addEdge(a, b, cost)
+
+n_nodes = int(input("Enter number of nodes for heuristic: "))
+for _ in range(n_nodes):
+    node = int(input("Enter node number: "))
+    value = int(input("Enter heuristic value: "))
+    G.setHeuristic(node, value)
+
+G.visualize()
+start = int(input("Enter start node: "))
+goal = int(input("Enter goal node: "))
+G.a_star(start, goal)
+
+CSV:
+df = pd.read_csv('graph_data.csv')
+
+G = gv()
+
+# Add Edges
+for idx, row in df.iterrows():
+    G.addEdge(row['source'], row['target'], row['weight'])
+
+# Add Heuristics
+for idx, row in df.iterrows():
+    if not pd.isna(row['heuristic']):
+        G.setHeuristic(int(row['source']), int(row['heuristic']))
+
+G.visualize()
+G.a_star(0, 9)
+
+B: directed :
+import networkx as nx
+import matplotlib.pyplot as plt
+import heapq
+
+class gv:
+    def __init__(self):
+        self.visual = []
+        self.adj_list = {}
+        self.heuristic = {}
+
+    def addEdge(self, a, b, cost):
+        self.visual.append([a, b])
+        if a not in self.adj_list:
+            self.adj_list[a] = []
+        self.adj_list[a].append((b, cost))
+
+    def setHeuristic(self, n, value):
+        self.heuristic[n] = value
+
+    def visualize(self):
+        grp = nx.DiGraph()
+        grp.add_edges_from(self.visual)
+        nx.draw_networkx(grp)
+        plt.show()
+
+    def a_star(self, start, goal):
+        pq = []
+        heapq.heappush(pq, (self.heuristic[start], 0, start))
+        visited = set()
+        parent = {start: None}
+        cost_so_far = {start: 0}
+
+        while pq:
+            est_total, cost, n = heapq.heappop(pq)
+            if n in visited:
+                continue
+
+            visited.add(n)
+
+            if n == goal:
+                break
+
+            for neighbor, weight in self.adj_list.get(n, []):
+                new_cost = cost + weight
+                if neighbor not in cost_so_far or new_cost < cost_so_far[neighbor]:
+                    cost_so_far[neighbor] = new_cost
+                    priority = new_cost + self.heuristic.get(neighbor, float('inf'))
+                    heapq.heappush(pq, (priority, new_cost, neighbor))
+                    parent[neighbor] = n
+
+        self.visualize_tree(parent)
+        print("A* Path:", self.construct_path(parent, start, goal))
+
+    def visualize_tree(self, parent):
+        tree_edges = [(parent[n], n) for n in parent if parent[n] is not None]
+        tree = nx.DiGraph()
+        tree.add_edges_from(tree_edges)
+        nx.draw_networkx(tree)
+        plt.show()
+
+    def construct_path(self, parent, start, goal):
+        path = []
+        while goal is not None:
+            path.append(goal)
+            goal = parent[goal]
+        return path[::-1]
+
+G = gv()
+
+n_edges = int(input("Enter number of edges: "))
+for _ in range(n_edges):
+    a = int(input("Enter source node: "))
+    b = int(input("Enter target node: "))
+    cost = int(input("Enter weight: "))
+    G.addEdge(a, b, cost)
+
+n_nodes = int(input("Enter number of nodes for heuristic: "))
+for _ in range(n_nodes):
+    node = int(input("Enter node number: "))
+    value = int(input("Enter heuristic value: "))
+    G.setHeuristic(node, value)
+
+G.visualize()
+start = int(input("Enter start node: "))
+goal = int(input("Enter goal node: "))
+G.a_star(start, goal)
+
+CSV:
+df = pd.read_csv('graph_data.csv')
+
+G = gv()
+
+# Add Edges
+for idx, row in df.iterrows():
+    G.addEdge(row['source'], row['target'], row['weight'])
+
+# Add Heuristics
+for idx, row in df.iterrows():
+    if not pd.isna(row['heuristic']):
+        G.setHeuristic(int(row['source']), int(row['heuristic']))
+
+G.visualize()
+G.a_star(0, 9)
+
+12-14.
+def fuzzy_union(set1, set2):
+    return {x: max(set1.get(x, 0), set2.get(x, 0)) for x in set(set1) | set(set2)}
+
+def fuzzy_intersection(set1, set2):
+    return {x: min(set1.get(x, 0), set2.get(x, 0)) for x in set(set1) & set(set2)}
+
+def fuzzy_complement(fuzzy_set):
+    return {x: 1 - fuzzy_set[x] for x in fuzzy_set}
+
+def is_subset(set1, set2):
+    return all(set1[x] <= set2.get(x, 0) for x in set1)
+
+def de_morgans_law(set1, set2):
+    lhs = fuzzy_complement(fuzzy_union(set1, set2))
+    rhs = fuzzy_intersection(fuzzy_complement(set1), fuzzy_complement(set2))
+    return lhs == rhs
+
+def get_fuzzy_set():
+    n = int(input("Enter number of elements: "))
+    fuzzy_set = {}
+    for _ in range(n):
+        element = input("Enter element: ")
+        membership = float(input(f"Enter membership value for {element}: "))
+        fuzzy_set[element] = membership
+    return fuzzy_set
+
+print("Enter first fuzzy set:")
+A = get_fuzzy_set()
+print("Enter second fuzzy set:")
+B = get_fuzzy_set()
+
+print("\nUnion:", fuzzy_union(A, B))
+print("Intersection:", fuzzy_intersection(A, B))
+print("Complement of A:", fuzzy_complement(A))
+print("Complement of B:", fuzzy_complement(B))
+print("A is subset of B:", is_subset(A, B))
+print("De Morgan's Law holds:", de_morgans_law(A, B))
+
+15-16.
+def minimax(sticks, is_computer_turn):
+    if sticks == 0:
+        return -1 if is_computer_turn else 1  # If it's computer's turn and sticks=0 → computer lost
+
+    if is_computer_turn:
+        best = -1000
+        for move in [1, 2, 3]:
+            if move <= sticks:
+                val = minimax(sticks - move, False)
+                best = max(best, val)
+        return best
+    else:
+        best = 1000
+        for move in [1, 2, 3]:
+            if move <= sticks:
+                val = minimax(sticks - move, True)
+                best = min(best, val)
+        return best
+
+def best_move(sticks):
+    for move in [1, 2, 3]:
+        if move <= sticks:
+            result = minimax(sticks - move, False)
+            if result == 1:
+                return move
+    return 1  # fallback
+
+sticks = int(input("Enter number of sticks: "))
+while sticks > 0:
+    print(f"Sticks left: {sticks}")
+    user = int(input("Pick 1-3 sticks: "))
+    if user not in [1, 2, 3] or user > sticks:
+        print("Invalid move.")
+        continue
+    sticks -= user
+    if sticks == 0:
+        print("You win!")
+        break
+    comp = best_move(sticks)
+    print(f"Computer picks {comp}")
+    sticks -= comp
+    if sticks == 0:
+        print("Computer wins!")
+        break
+
+24-26.
+# STEP 1: Install required libraries (run once if needed)
+!pip install nltk scikit-learn
+
+# STEP 2: Imports
+import nltk
+import re
+from nltk.tokenize import word_tokenize
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+
+nltk.download('punkt')
+
+# STEP 3: Read 3 text files (make sure they are in the same folder as your notebook)
+file_names = ['/content/text1.txt', '/content/text2.txt', '/content/text3.txt']  # 🔁 change names if needed
+
+texts = []
+for fname in file_names:
+    with open(fname, 'r', encoding='utf-8') as f:
+        texts.append(f.read())
+
+text = ' '.join(texts)
+
+# STEP 4: Clean and preprocess
+cleaned_text = re.sub(r'[^A-Za-z\s]', '', text).lower()
+docs = [cleaned_text]
+
+# ASSIGNMENT 24: ONE-HOT ENCODING
+print("\n📌 Assignment 24 - One-Hot Encoding:")
+unique_words = sorted(set(word_tokenize(cleaned_text)))
+word_to_index = {word: i for i, word in enumerate(unique_words)}
+
+# Show one-hot encoding for first 10 words
+for word in unique_words[:10]:
+    one_hot = [0] * len(unique_words)
+    one_hot[word_to_index[word]] = 1
+    print(f"{word}: {one_hot}")
+
+# ASSIGNMENT 25: BAG OF WORDS
+print("\n📌 Assignment 25 - Bag of Words:")
+cv = CountVectorizer()
+bow_matrix = cv.fit_transform(docs)
+print("Vocabulary:", cv.get_feature_names_out()[:10])
+print("BoW Matrix:\n", bow_matrix.toarray())
+
+# ASSIGNMENT 26: TF-IDF
+print("\n📌 Assignment 26 - TF-IDF Vectorization:")
+tfidf = TfidfVectorizer()
+tfidf_matrix = tfidf.fit_transform(docs)
+print("Vocabulary:", tfidf.get_feature_names_out()[:10])
+print("TF-IDF Matrix:\n", tfidf_matrix.toarray())
+
+17.
+import numpy as np
+
+class SimpleMLP:
+    def __init__(self, input_size, hidden_size1, hidden_size2, output_size):
+        self.input_size = input_size
+        self.hidden_size1 = hidden_size1
+        self.hidden_size2 = hidden_size2
+        self.output_size = output_size
+        self.epochs = 0
+
+    def randomize_parameters(self):
+        self.W1 = np.random.rand(self.input_size, self.hidden_size1)
+        self.b1 = np.random.rand(1, self.hidden_size1)
+
+        self.W2 = np.random.rand(self.hidden_size1, self.hidden_size2)
+        self.b2 = np.random.rand(1, self.hidden_size2)
+
+        self.W3 = np.random.rand(self.hidden_size2, self.output_size)
+        self.b3 = np.random.rand(1, self.output_size)
+
+    def run(self, epochs=10):
+        for _ in range(epochs):
+            self.randomize_parameters()
+            self.epochs += 1
+
+    def print_details(self):
+        print(f"Final Weight Matrices after {self.epochs} epochs:")
+        print(f"W1:\n{self.W1}\n")
+        print(f"W2:\n{self.W2}\n")
+        print(f"W3:\n{self.W3}\n")
+
+        print(f"Final Bias Values:")
+        print(f"b1:\n{self.b1}\n")
+        print(f"b2:\n{self.b2}\n")
+        print(f"b3:\n{self.b3}\n")
+
+        print(f"Total Epochs: {self.epochs}")
+
+if __name__ == "__main__":
+    input_size = 3  # Example: 3 inputs
+    hidden_size1 = 4
+    hidden_size2 = 3
+    output_size = 1
+
+    model = SimpleMLP(input_size, hidden_size1, hidden_size2, output_size)
+    model.run(epochs=10)  # Randomize 10 times
+    model.print_details()
+
+18.
+import numpy as np
+
+class SimpleMLP2:
+    def __init__(self, input_size, hidden_size, output_size):
+        self.input_size = input_size
+        self.hidden_size = hidden_size
+        self.output_size = output_size
+        self.epochs = 0
+
+    def randomize_parameters(self):
+        self.W1 = np.random.rand(self.input_size, self.hidden_size)
+        self.b1 = np.random.rand(1, self.hidden_size)
+
+        self.W2 = np.random.rand(self.hidden_size, self.output_size)
+        self.b2 = np.random.rand(1, self.output_size)
+
+    def run(self, epochs=10):
+        for _ in range(epochs):
+            self.randomize_parameters()
+            self.epochs += 1
+
+    def print_details(self):
+        print(f"Final Weight Matrices after {self.epochs} epochs:")
+        print(f"W1:\n{self.W1}\n")
+        print(f"W2:\n{self.W2}\n")
+
+        print(f"Final Bias Values:")
+        print(f"b1:\n{self.b1}\n")
+        print(f"b2:\n{self.b2}\n")
+
+        print(f"Total Epochs: {self.epochs}")
+
+if __name__ == "__main__":
+    input_size = 4  # 4 inputs
+    hidden_size = 5  # Example: 5 hidden neurons
+    output_size = 2  # 2 outputs
+
+    model2 = SimpleMLP2(input_size, hidden_size, output_size)
+    model2.run(epochs=10)  # Randomize 10 times
+    model2.print_details()
+
+19.
+import numpy as np
+
+# Sigmoid activation function
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+# Derivative of sigmoid function
+def sigmoid_derivative(x):
+    return x * (1 - x)
+
+# MLP class with 2 hidden layers
+class MLP:
+    def __init__(self, input_size, hidden_size1, hidden_size2, output_size):
+        # Initialize weights and biases
+        self.W1 = np.random.rand(input_size, hidden_size1)
+        self.b1 = np.random.rand(1, hidden_size1)
+
+        self.W2 = np.random.rand(hidden_size1, hidden_size2)
+        self.b2 = np.random.rand(1, hidden_size2)
+
+        self.W3 = np.random.rand(hidden_size2, output_size)
+        self.b3 = np.random.rand(1, output_size)
+
+        self.steps = 0
+
+    # Forward propagation
+    def forward(self, X):
+        self.input = X
+        self.a1 = sigmoid(np.dot(self.input, self.W1) + self.b1)
+        self.a2 = sigmoid(np.dot(self.a1, self.W2) + self.b2)
+        self.output = sigmoid(np.dot(self.a2, self.W3) + self.b3)
+        return self.output
+
+    # Backpropagation
+    def backprop(self, y, learning_rate):
+        output_error = y - self.output
+        delta3 = output_error * sigmoid_derivative(self.output)
+
+        delta2 = delta3.dot(self.W3.T) * sigmoid_derivative(self.a2)
+        delta1 = delta2.dot(self.W2.T) * sigmoid_derivative(self.a1)
+
+        # Update weights and biases
+        self.W3 += self.a2.T.dot(delta3) * learning_rate
+        self.b3 += np.sum(delta3, axis=0, keepdims=True) * learning_rate
+
+        self.W2 += self.a1.T.dot(delta2) * learning_rate
+        self.b2 += np.sum(delta2, axis=0, keepdims=True) * learning_rate
+
+        self.W1 += self.input.T.dot(delta1) * learning_rate
+        self.b1 += np.sum(delta1, axis=0, keepdims=True) * learning_rate
+
+    # Training method
+    def train(self, X, y, epochs=10000, learning_rate=0.1):
+        for _ in range(epochs):
+            self.forward(X)
+            self.backprop(y, learning_rate)
+            self.steps += 1
+
+    # Display weights, biases and steps
+    def print_details(self):
+        print("\nFinal Weight Matrices:")
+        print("W1:\n", self.W1)
+        print("W2:\n", self.W2)
+        print("W3:\n", self.W3)
+
+        print("\nFinal Bias Values:")
+        print("b1:\n", self.b1)
+        print("b2:\n", self.b2)
+        print("b3:\n", self.b3)
+
+        print(f"\nTotal Training Steps (Epochs): {self.steps}")
+
+# Example run
+if __name__ == "__main__":
+    # 4 binary inputs and corresponding binary outputs
+    X = np.array([[0, 0, 0, 0],
+                  [0, 0, 0, 1],
+                  [0, 0, 1, 0],
+                  [0, 0, 1, 1],
+                  [0, 1, 0, 0],
+                  [0, 1, 0, 1],
+                  [0, 1, 1, 0],
+                  [0, 1, 1, 1],
+                  [1, 0, 0, 0],
+                  [1, 0, 0, 1],
+                  [1, 0, 1, 0],
+                  [1, 0, 1, 1],
+                  [1, 1, 0, 0],
+                  [1, 1, 0, 1],
+                  [1, 1, 1, 0],
+                  [1, 1, 1, 1]])
+
+    y = np.array([[0],
+                  [1],
+                  [1],
+                  [0],
+                  [1],
+                  [0],
+                  [0],
+                  [1],
+                  [1],
+                  [0],
+                  [0],
+                  [1],
+                  [1],
+                  [1],
+                  [0],
+                  [1]])
+
+    # Initialize and train the MLP
+    mlp = MLP(input_size=4, hidden_size1=3, hidden_size2=3, output_size=1)
+    mlp.train(X, y, epochs=10000, learning_rate=0.1)
+
+    # Print final details
+    mlp.print_details()
+
+22.
+import re
+import nltk
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+from textblob import TextBlob
+
+# Ensure necessary NLTK data is downloaded
+nltk.download('punkt')
+nltk.download('stopwords')
+
+# Read the text file
+with open('/content/sample_text.txt', 'r', encoding='utf-8') as file:
+    text = file.read()
+
+# a. Text cleaning: remove punctuation, numbers, and extra spaces
+text = re.sub(r'[^A-Za-z\s]', '', text)  # remove punctuation/special characters/numbers
+text = re.sub(r'\s+', ' ', text).strip()  # remove extra whitespaces
+
+# b. Convert text to lowercase
+text = text.lower()
+
+# c. Tokenization
+tokens = word_tokenize(text)
+
+# d. Remove stop words
+stop_words = set(stopwords.words('english'))
+filtered_tokens = [word for word in tokens if word not in stop_words]
+
+# e. Correct misspelled words using TextBlob
+corrected_tokens = [str(TextBlob(word).correct()) for word in filtered_tokens]
+
+# Final cleaned and corrected text
+final_text = ' '.join(corrected_tokens)
+
+print("Processed Text:")
+print(final_text)
+
+
+23.
+# STEP 1: Install required libraries
+!pip install nltk textblob
+!python -m textblob.download_corpora
+
+# STEP 2: Import libraries
+import re
+import nltk
+from nltk.tokenize import word_tokenize
+from nltk.stem import PorterStemmer, WordNetLemmatizer
+
+# Download NLTK datasets
+nltk.download('punkt')
+nltk.download('wordnet')
+nltk.download('omw-1.4')
+
+with open('/content/sample_text.txt', 'r', encoding='utf-8') as file:
+    text = file.read()
+
+
+# a. Text cleaning using regex
+text = re.sub(r'[^A-Za-z\s]', '', text)         # Remove punctuation/numbers
+text = re.sub(r'\s+', ' ', text).strip()        # Remove extra whitespaces
+
+# b. Convert to lowercase
+text = text.lower()
+
+# c. Stemming and Lemmatization
+tokens = word_tokenize(text)
+
+# Initialize stemmer and lemmatizer
+stemmer = PorterStemmer()
+lemmatizer = WordNetLemmatizer()
+
+# Apply stemming and lemmatization
+stemmed_tokens = [stemmer.stem(token) for token in tokens]
+lemmatized_tokens = [lemmatizer.lemmatize(token) for token in stemmed_tokens]
+
+# d. Create list of 3-consecutive lemmatized words
+triplets = [' '.join(lemmatized_tokens[i:i+3]) for i in range(len(lemmatized_tokens)-2)]
+
+# Output sample
+print(" Sample of 3-word sequences:")
+for t in triplets[:10]:
+    print(t)
